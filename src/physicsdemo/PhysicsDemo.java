@@ -5,6 +5,10 @@
  */
 package physicsdemo;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -13,7 +17,7 @@ import javafx.stage.Stage;
 import simulation.Box;
 import simulation.Simulation;
 
-public class PhysicsDemo extends Application {
+public class PhysicsDemo extends Application implements simulation.Constants{
 
     @Override
     public void start(Stage primaryStage) {
@@ -67,8 +71,37 @@ public class PhysicsDemo extends Application {
         launch(args);
     }
     class handleClient implements Runnable {
+
+        private Socket socket;
+        private Box paddle;
+
         public handleClient(Socket socket, Box paddle) {
-            
+            this.socket = socket;
+            this.paddle = paddle;
+        }
+
+        public void run() {
+            BufferedReader in = null;
+            PrintWriter out = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream());
+                while (true) {
+                    int request = Integer.parseInt(in.readLine());
+                    switch (request) {
+                        case (GET_INFO):
+                            break;
+                        case (GET_COLOR):
+                            break;
+                        case (WAIT):
+                            break;
+                        case (MOVE):
+                            break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
