@@ -5,10 +5,12 @@
  */
 package physicsdemo;
 
+import java.net.Socket;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import simulation.Box;
 import simulation.Simulation;
 
 public class PhysicsDemo extends Application {
@@ -65,7 +67,9 @@ public class PhysicsDemo extends Application {
         launch(args);
     }
     class handleClient implements Runnable {
-        
+        public handleClient(Socket socket, Box paddle) {
+            
+        }
     }
 
 }
