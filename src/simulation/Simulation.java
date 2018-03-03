@@ -5,38 +5,61 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 import physics.*;
 
 public class Simulation implements Constants{
     private Box outer;
     private Ball ball;
-    private Box inner;
+    private Box bluePaddle;
+    private Box redPaddle;
     private Lock lock;
     private Goal blueGoal;
     private Goal redGoal;
+    private int width;
+    private int height;
+    private Vector initialVector;
+    private int blueScore = 0;
+    private int redScore = 0;
+    private Text displayScore;
     
     public Simulation(int width,int height,int dX,int dY)
     {
+        this.width = width;
+        this.height = height;
+        initialVector = new Vector(dX,dY);
         outer = new Box(0,0,width,height,false);
         ball = new Ball(width/2,height/2,dX,dY);
-        inner = new Box(width - 60,height - 40, 40, 20,true);
-        //bluePaddle = new Box(new Box(width - 60,height - 40, 40, 20,true);
-        //redPaddle = new Box(width - 60,height - 40, 40, 20,true);
+        bluePaddle = new Box(width - 60, 40, 40, 20,true,BLUE);
+        redPaddle = new Box(width - 60, height-40, 40, 20,true,RED);
         lock = new ReentrantLock();
         blueGoal = new Goal(width/3,width/3,0,BLUE);
         redGoal = new Goal(width/3,width/3,height,RED);
+        displayScore = new Text(width/2, height+20,"BLUE: "+blueScore+"\nRED: "+redScore);
     }
     
     public void evolve(double time)
     {
         lock.lock();
-        if(blueGoal.isScored(ball.getRay().toSegment(time))) {
-            System.out.println("Goal");
-            ball.getRay().multiplySpeed(1.2);
-        }
-        Ray newLoc = inner.bounceRay(ball.getRay(), time);
+        Ray newLoc = bluePaddle.bounceRay(ball.getRay(), time);
         if(newLoc != null)
             ball.setRay(newLoc);
+        newLoc = redPaddle.bounceRay(ball.getRay(), time);
+        if(newLoc != null)
+            ball.setRay(newLoc);
+        else if(blueGoal.isScored(ball.getRay().toSegment(time))) {
+            System.out.println("Red Scored");
+            ball.getRay().restart(new Point(width/2,height/2), initialVector);
+            ball.getRay().multiplySpeed(1.1);
+            redScore++;
+            try{Thread.sleep(1000);}catch(InterruptedException e){}
+        } else if(redGoal.isScored(ball.getRay().toSegment(time))) {
+            System.out.println("Blue Scored");
+            ball.getRay().restart(new Point(width/2,height/2), initialVector);
+            ball.getRay().multiplySpeed(1.1);
+            blueScore++;
+            try{Thread.sleep(1000);}catch(InterruptedException e){}
+        }
         else {
             newLoc = outer.bounceRay(ball.getRay(), time);
             if(newLoc != null)
@@ -44,11 +67,26 @@ public class Simulation implements Constants{
             else
                 ball.move(time);
         } 
+        double x = ball.getRay().origin.x;
+        double y = ball.getRay().origin.y;
+        if(x>width+2 || x<0-2 || y>height+2 || y<0-2) { //Restarts if the ball escapes the outer box;
+            try {
+                Thread.sleep(1000);
+                ball.getRay().restart(new Point(width/2,height/2));
+            }catch(InterruptedException e) {
+                
+            } 
+        }
         lock.unlock();
     }
     
-    public void moveInner(int deltaX,int deltaY)
+    public void moveInner(int deltaX,int deltaY, int color)
     {
+        Box inner=null;
+        if(color==BLUE)
+            inner = bluePaddle;
+        else if(color==RED)
+            inner = redPaddle;
         lock.lock();
         int dX = deltaX;
         int dY = deltaY;
@@ -84,16 +122,34 @@ public class Simulation implements Constants{
     {
         ArrayList<Shape> newShapes = new ArrayList<Shape>();
         newShapes.add(outer.getShape());
-        newShapes.add(inner.getShape());
+        newShapes.add(bluePaddle.getShape());
+        newShapes.add(redPaddle.getShape());
         newShapes.add(ball.getShape());
         newShapes.add(blueGoal.getShape());
         newShapes.add(redGoal.getShape());
+        newShapes.add(displayScore);
+      //  newShapes.add(new Text(width/2, height+22,"RED: "+redScore));
         return newShapes;
     }
     
     public void updateShapes()
     {
-        inner.updateShape();
+        bluePaddle.updateShape();
+        redPaddle.updateShape();
         ball.updateShape();
+        displayScore.setText("BLUE: "+blueScore+"\nRED: "+redScore);
+    }
+    
+    public int[] sendChangingValues() {
+        int[] values = new int[8];
+        values[0] = bluePaddle.x;
+        values[1] = bluePaddle.y;
+        values[2] = redPaddle.x;
+        values[3] = redPaddle.y;
+        values[4] = (int) Math.round(ball.getRay().origin.x);
+        values[5] = (int) Math.round(ball.getRay().origin.y);
+        values[6] = blueScore;
+        values[7] = redScore;
+        return values;
     }
 }

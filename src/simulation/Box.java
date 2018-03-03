@@ -13,7 +13,15 @@ public class Box {
     public int y;
     public int width;
     public int height;
+    public Color color;
     
+    public Box(int x,int y,int width,int height,boolean outward, int color) {
+        this(x,y,width,height,outward);
+        if(color==Constants.BLUE)
+            this.color = Color.BLUE;
+        else if(color==Constants.RED) 
+            this.color = Color.RED;
+    }
     // Set outward to true if you want a box with outward pointed normals
     public Box(int x,int y,int width,int height,boolean outward)
     {
@@ -75,7 +83,7 @@ public class Box {
     public Shape getShape()
     {
         r = new Rectangle(x, y, width, height);
-        r.setFill(Color.WHITE);
+        r.setFill(color);
         r.setStroke(Color.BLACK);
         return r;
     }
