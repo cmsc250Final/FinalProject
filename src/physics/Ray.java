@@ -18,6 +18,14 @@ public class Ray {
   public void multiplySpeed(double d) {
       speed = speed*d;
   }
+  public void restart(Point origin, Vector v) {
+      this.origin = origin;
+      this.v = v;
+      this.v.normalize();
+  }
+    public void restart(Point origin) {
+      this.origin = origin;
+  }
   
   // Construct and return a line segment representing the path
   // the object would take over the given span of time.

@@ -27,8 +27,23 @@ public class TestClient implements simulation.Constants{ //This class is only us
             out = new PrintWriter(socket.getOutputStream());
             out.println(GET_COLOR);
             out.flush();
-            System.out.println(in.readLine());
-        while(true);
+            int color = Integer.parseInt(in.readLine());
+            System.out.println(color);
+            out.println(WAIT);
+            out.flush();
+            String s = in.readLine();
+            System.out.println(s);
+            while(true) {
+            out.println(MOVE);
+            out.flush();
+            out.println((int) (Math.random()*4+5));
+            out.flush();
+            try { Thread.sleep(50);} catch(Exception e){}
+          //  for(int i=0; i<8; i++) {
+         //   System.out.println(in.readLine());
+         //   } 
+    
+        }
         } catch(UnknownHostException e) {
             e.printStackTrace();
         } catch(IOException e) {
