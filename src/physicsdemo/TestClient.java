@@ -34,11 +34,11 @@ public class TestClient implements simulation.Constants{ //This class is only us
             String s = in.readLine();
             System.out.println(s);
             while(true) {
-            out.println(MOVE);
+            out.println(GET_INFO);
             out.flush();
-            out.println((int) (Math.random()*4+5));
-            out.flush();
-            try { Thread.sleep(50);} catch(Exception e){}
+                for(int i=0;i<8;i++)
+                        System.out.println(in.readLine());
+            try { Thread.sleep(1000*30);} catch(Exception e){}
           //  for(int i=0; i<8; i++) {
          //   System.out.println(in.readLine());
          //   } 

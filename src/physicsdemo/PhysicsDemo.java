@@ -85,6 +85,8 @@ public class PhysicsDemo extends Application implements simulation.Constants{
             numClients++;
             System.out.println(socket);
             System.out.println(socket2);
+            new Thread(new randomMover(BLUE)).start();
+            new Thread(new randomMover(RED)).start();
         } catch (IOException e) {
                 e.printStackTrace();;
         } finally {
@@ -129,7 +131,8 @@ public class PhysicsDemo extends Application implements simulation.Constants{
                 in = new BufferedReader(new InputStreamReader(hcsocket.getInputStream()));
                 out = new PrintWriter(hcsocket.getOutputStream());
                 while (true) {
-                    int request = Integer.parseInt(in.readLine());     
+                    int request = Integer.parseInt(in.readLine());   
+                    System.out.println(request);
                     switch (request) {
                         case (GET_INFO):
                             for(int i:sim.sendChangingValues()) {
@@ -162,10 +165,40 @@ public class PhysicsDemo extends Application implements simulation.Constants{
                             break;
                     } out.flush();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
             }
+        }
+    }
+    
+    private class randomMover implements Runnable {
+        private int colorToMove;
+        private randomMover(int c) {
+            colorToMove = c;
+        }
+        public void run() {
+            while(true) {
+            int score = sim.getScore(colorToMove);
+            int rand = (int) (Math.random()*20)+1;
+            if(score-4>=rand) {
+                int distance = (int) (Math.random()*5)+1;
+                int direction = (int) (Math.random()*4);
+                if(direction==0)
+                    sim.moveInner(0,distance,colorToMove);
+                else if(direction==1)
+                    sim.moveInner(0,-distance,colorToMove);
+                else if(direction==2)
+                    sim.moveInner(distance,0,colorToMove);
+                else if(direction==3)
+                    sim.moveInner(-distance, 0, colorToMove);
+            }
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException e) {
+                
+            }
+        }
         }
     }
 

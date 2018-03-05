@@ -43,6 +43,11 @@ public class Box {
         }
     }
     
+    public void setCoordinates(int x, int y) {
+        this.x=x;
+        this.y=y;
+    }
+    
     public Ray bounceRay(Ray in,double time)
     {
         // For each of the walls, check to see if the Ray intersects the wall
