@@ -30,8 +30,8 @@ public class Simulation implements Constants{
         initialVector = new Vector(dX,dY);
         outer = new Box(0,0,width,height,false);
         ball = new Ball(width/2,height/2,dX,dY);
-        bluePaddle = new Box(width - 60, 40, 40, 20,true,BLUE);
-        redPaddle = new Box(width - 60, height-40, 40, 20,true,RED);
+        bluePaddle = new Box(width/2-20, 40, 40, 20,true,BLUE);
+        redPaddle = new Box(width/2 - 20, height-40, 40, 20,true,RED);
         lock = new ReentrantLock();
         blueGoal = new Goal(width/3,width/3,0,BLUE);
         redGoal = new Goal(width/3,width/3,height,RED);
@@ -76,6 +76,16 @@ public class Simulation implements Constants{
             }catch(InterruptedException e) {
                 
             } 
+        }
+        if(redScore>=3 || blueScore>=3) {
+            ball.getRay().restart(new Point(width/2,height/2), initialVector);
+            ball.getRay().speed = initialVector.length();
+            bluePaddle.move((width/2-20)-bluePaddle.x,40-bluePaddle.y);
+            redPaddle.move((width/2-20)-redPaddle.x, (height-40)-redPaddle.y);
+            redScore=0;
+            blueScore=0;
+            try{Thread.sleep(2000);}
+            catch(InterruptedException e) {}
         }
         lock.unlock();
     }
@@ -151,5 +161,12 @@ public class Simulation implements Constants{
         values[6] = blueScore;
         values[7] = redScore;
         return values;
+    }
+    public int getScore(int color) { 
+        if(color==BLUE)    
+            return blueScore;
+        else if(color==RED)
+            return redScore;
+        return -1;
     }
 }
