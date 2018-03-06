@@ -77,7 +77,7 @@ public class Simulation implements Constants{
                 
             } 
         }
-        if(redScore>=3 || blueScore>=3) {
+        if(redScore>=10 || blueScore>=10) {
             ball.getRay().restart(new Point(width/2,height/2), initialVector);
             ball.getRay().speed = initialVector.length();
             bluePaddle.move((width/2-20)-bluePaddle.x,40-bluePaddle.y);
