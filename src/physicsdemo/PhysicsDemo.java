@@ -41,7 +41,7 @@ public class PhysicsDemo extends Application implements simulation.Constants{
         root.setShapes(sim.setUpShapes());
         
         Scene scene = new Scene(root, 300, 250);
-        root.setOnKeyPressed(e -> {
+ /*       root.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case DOWN:
                     sim.moveInner(0, 3,BLUE);
@@ -69,31 +69,34 @@ public class PhysicsDemo extends Application implements simulation.Constants{
                     break;
             }
         });
-        root.requestFocus(); 
+        root.requestFocus(); */
 
         primaryStage.setTitle("Game Physics");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest((event)->System.exit(0));
         primaryStage.show();
+        Thread getClients = new Thread(()->{
         try{ 
-            ServerSocket serversocket = new ServerSocket(3200);
+            ServerSocket serversocket = new ServerSocket(3200); //ip adress: 143.44.72.171
             Socket socket = serversocket.accept();
             new Thread(new handleClient(socket,BLUE)).start();
             numClients++;
+            System.out.println(socket);
             Socket socket2 = serversocket.accept();
             new Thread(new handleClient(socket2,RED)).start();
             numClients++;
-            System.out.println(socket);
             System.out.println(socket2);
             new Thread(new randomMover(BLUE)).start();
             new Thread(new randomMover(RED)).start();
         } catch (IOException e) {
                 e.printStackTrace();;
         } finally {
-        }
+        }});
+        getClients.start();
         
         // This is the main animation thread
         new Thread(() -> {
+           try{ getClients.join();} catch(InterruptedException e){}
             while (true) {
                 sim.evolve(1.0);
                 Platform.runLater(()->sim.updateShapes());
