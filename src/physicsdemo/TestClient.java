@@ -22,7 +22,7 @@ public class TestClient implements simulation.Constants{ //This class is only us
         BufferedReader in = null;
         PrintWriter out = null;
         try {
-            socket = new Socket("localhost",3200);
+            socket = new Socket("143.44.72.171",3200);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
             out.println(GET_COLOR);
